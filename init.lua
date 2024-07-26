@@ -781,17 +781,6 @@ require('lazy').setup({
     end,
   },
 
-  {
-    'EdenEast/nightfox.nvim',
-    priority = 1000,
-    init = function()
-      -- Theme selection, use `:Telescope colorscheme` to see all available themes
-      vim.cmd.colorscheme 'dayfox'
-
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
-
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -879,6 +868,9 @@ require('lazy').setup({
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+
+  -- NOTE: Import custom themes
+  require 'custom.themes',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
