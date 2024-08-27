@@ -103,6 +103,7 @@ vim.g.have_nerd_font = false
 
 -- Make line numbers default
 vim.opt.number = true
+
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
@@ -160,6 +161,9 @@ vim.opt.inccommand = 'split'
 -- Show which line your cursor is on
 vim.opt.cursorline = true
 
+-- Keep cursor in block mode
+-- vim.opt.guicursor = 'n-v-i-c:block'
+
 -- Set the default tabstop and shiftwidth
 vim.opt_global.shiftwidth = 2
 vim.opt_global.tabstop = 2
@@ -178,8 +182,6 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('v', 'p', '"_dP', { silent = true })
 
 vim.opt.hlsearch = true
-
-vim.keymap.set('n', '<leader>pv', vim.cmd.Ex)
 
 -- Move line up and down
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
