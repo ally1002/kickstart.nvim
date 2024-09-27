@@ -3,4 +3,5 @@ return {
   { 'tjdevries/sPoNGe-BoB.NvIm' },
   { 'alec-gibson/nvim-tetris' },
   { 'tamton-aquib/zone.nvim' },
+  { 'Eandrju/cellular-automaton.nvim' },
 }
