@@ -158,7 +158,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Keep cursor in block mode
--- vim.opt.guicursor = 'n-v-i-c:block'
+vim.opt.guicursor = 'n-v-i-c:block'
 
 -- Set the default tabstop and shiftwidth
 vim.opt_global.shiftwidth = 2
@@ -380,6 +380,29 @@ require('lazy').setup({
         -- This will not install any breaking changes.
         -- For major updates, this must be adjusted manually.
         version = '^1.0.0',
+        config = function()
+          local telescope = require 'telescope'
+          local lga_actions = require 'telescope-live-grep-args.actions'
+
+          telescope.setup {
+            extensions = {
+              live_grep_args = {
+                auto_quoting = true, -- enable/disable auto-quoting
+                -- define mappings, e.g.
+                mappings = { -- extend mappings
+                  i = {
+                    ['<C-k>'] = lga_actions.quote_prompt(),
+                    -- freeze the current list and start a fuzzy search in the frozen list
+                    ['<C-space>'] = lga_actions.to_fuzzy_refine,
+                  },
+                },
+              },
+            },
+          }
+
+          -- don't forget to load the extension
+          telescope.load_extension 'live_grep_args'
+        end,
       },
     },
     config = function()
@@ -440,7 +463,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
+      local live_grep_args_shortcuts = require 'telescope-live-grep-args.shortcuts'
       vim.keymap.set('n', '<leader>sa', ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
+      vim.keymap.set('v', '<leader>gc', live_grep_args_shortcuts.grep_visual_selection)
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
