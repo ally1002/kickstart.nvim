@@ -149,7 +149,7 @@ vim.opt.splitbelow = true
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = '  ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -161,6 +161,7 @@ vim.opt.cursorline = true
 vim.opt.guicursor = 'n-v-i-c:block'
 
 -- Set the default tabstop and shiftwidth
+vim.opt_global.expandtab = true
 vim.opt_global.shiftwidth = 2
 vim.opt_global.tabstop = 2
 
@@ -180,6 +181,10 @@ vim.keymap.set('v', 'p', '"_dP', { silent = true })
 -- Move line up and down
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+
+-- Tab and shift tab
+vim.keymap.set('v', '<Tab>', '>gv')
+vim.keymap.set('v', '<S-Tab>', '<gv')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -457,6 +462,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sG', builtin.git_status, { desc = '[S]earch [G]it files' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+      vim.keymap.set('n', '<leader>sb', builtin.current_buffer_fuzzy_find, { desc = '[S]earch current [B]uff' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
