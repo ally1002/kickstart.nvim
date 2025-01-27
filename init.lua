@@ -165,6 +165,11 @@ vim.opt_global.expandtab = true
 vim.opt_global.shiftwidth = 2
 vim.opt_global.tabstop = 2
 
+-- Enable folding
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldlevel = 20
+
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
@@ -191,6 +196,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- LspRestart
 vim.keymap.set('n', '<leader>zig', '<cmd>LspRestart<cr>')
+
+-- Execute lua code
+vim.keymap.set('n', '<leader>x', ':.lua<CR>')
+vim.keymap.set('v', '<leader>x', ':lua<CR>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
