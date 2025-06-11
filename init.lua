@@ -90,6 +90,9 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Show errors
+vim.diagnostic.config { virtual_text = true }
+
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -202,7 +205,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<leader>zig', '<cmd>LspRestart<cr>')
 
 -- Execute lua code
-vim.keymap.set('n', '<leader>x', ':.lua<CR>')
+vim.keymap.set('n', '<leader>x', ':luafile %<CR>')
 vim.keymap.set('v', '<leader>x', ':lua<CR>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -330,7 +333,7 @@ require('lazy').setup({
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
-      delay = 0,
+      delay = 250,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -419,10 +422,26 @@ require('lazy').setup({
             extensions = {
               live_grep_args = {
                 auto_quoting = true, -- enable/disable auto-quoting
+                vimgrep_arguments = {
+                  'rg',
+                  '--color=never',
+                  '--no-heading',
+                  '--with-filename',
+                  '--line-number',
+                  '--column',
+                  '--smart-case',
+                  -- For symlinks search
+                  '--follow',
+                },
                 -- define mappings, e.g.
                 mappings = { -- extend mappings
                   i = {
+                    -- To add quotes surround text
                     ['<C-k>'] = lga_actions.quote_prompt(),
+                    -- For symbolic links
+                    ['<C-l>'] = lga_actions.quote_prompt { postfix = ' -L' },
+                    -- Ignore specs
+                    ['<C-i>'] = lga_actions.quote_prompt { postfix = ' --glob "!*spec*"' },
                     -- freeze the current list and start a fuzzy search in the frozen list
                     ['<C-space>'] = lga_actions.to_fuzzy_refine,
                   },
@@ -496,7 +515,10 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       local live_grep_args_shortcuts = require 'telescope-live-grep-args.shortcuts'
-      vim.keymap.set('n', '<leader>sa', ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
+      vim.keymap.set('n', '<leader>sa', function()
+        require('telescope').extensions.live_grep_args.live_grep_args {}
+      end, { desc = '[S]earch with [A]rgs' })
+
       vim.keymap.set('v', '<leader>gc', live_grep_args_shortcuts.grep_visual_selection)
 
       -- Slightly advanced example of overriding default behavior and theme
@@ -574,7 +596,7 @@ require('lazy').setup({
       --  - Symbol Search
       --  - and more!
       --
-      -- Thus, Language Servers are external tools that must be installed separately from
+      -- Thus, Langutge Servers are external tools that must be installed separately from
       -- Neovim. This is where `mason` and related plugins come into play.
       --
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
@@ -757,6 +779,16 @@ require('lazy').setup({
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
+              diagnostics = {
+                globals = { 'love' },
+              },
+              workspace = {
+                checkThirdParty = false,
+                telemetry = { enable = false },
+                library = {
+                  '${3rd}/love2d/library',
+                },
+              },
             },
           },
         },

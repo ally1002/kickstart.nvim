@@ -16,6 +16,7 @@ return {
           ['<C-k>'] = false,
           ['<C-j>'] = false,
           ['<M-h>'] = 'actions.select_split',
+          ['<C-q>'] = 'actions.add_to_qflist',
         },
         win_options = {
           winbar = '%{v:lua.CustomOilBar()}',
