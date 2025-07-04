@@ -17,12 +17,5 @@ return {
     vim.keymap.set('n', '<leader><C-y>', function()
       File.copy_test_file(vim.api.nvim_buf_get_name(0))
     end)
-
-    -- vim.keymap.set('n', '<leader>r', function()
-    --   local path = vim.fn.expand '%:.'
-    --   print(path)
-    --
-    --   vim.cmd('!npm run jest:watch ' .. path)
-    -- end)
   end,
 }
