@@ -168,9 +168,9 @@ vim.o.cursorline = true
 vim.opt.guicursor = 'n-v-i-c:block'
 
 -- Set the default tabstop and shiftwidth
-vim.opt_global.expandtab = true
-vim.opt_global.shiftwidth = 2
-vim.opt_global.tabstop = 2
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
 
 -- Enable folding
 vim.opt.foldmethod = 'expr'
@@ -195,6 +195,8 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Custom key map for not yanking the selection after pasting
 vim.keymap.set('v', 'p', '"_dP', { silent = true })
 
+vim.keymap.set('n', '<A-v>', 'v$h', { silent = true })
+
 -- Move line up and down
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
@@ -206,6 +208,38 @@ vim.keymap.set('v', '<S-Tab>', '<gv')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+local function query_replace()
+  local search = vim.fn.input 'Query replace (Default foo -> bar): '
+  if search == '' then
+    return
+  end
+
+  local replace = vim.fn.input('Query replace (' .. search .. ' -> ?): ')
+  if replace == '' then
+    return
+  end
+
+  vim.fn.setreg('/', search)
+  vim.fn.setreg('+', replace)
+
+  local mode = vim.fn.mode()
+  local cmd
+
+  if mode == 'v' or mode == 'V' or mode == '\x16' then
+    local a = vim.fn.getpos("'<")
+    local b = vim.fn.getpos("'>")
+    local start_line = a[2]
+    local end_line = b[2]
+    cmd = string.format('%d,%ds/%s/%s/gc', start_line, end_line, vim.fn.escape(search, '/'), vim.fn.escape(replace, '/'))
+  else
+    cmd = string.format('%%s/%s/%s/gc', vim.fn.escape(search, '/'), vim.fn.escape(replace, '/'))
+  end
+
+  vim.cmd('nohlsearch')
+  vim.cmd(cmd)
+end
+
+vim.api.nvim_create_user_command('QueryReplace', query_replace, { range = true })
 -- LspRestart
 vim.keymap.set('n', '<leader>zig', '<cmd>LspRestart<cr>')
 
@@ -526,6 +560,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sa', function()
         require('telescope').extensions.live_grep_args.live_grep_args {}
       end, { desc = '[S]earch with [A]rgs' })
+
+      vim.keymap.set('n', '<leader>so', function()
+        local cwd = nil
+        if vim.bo.filetype == 'oil' then
+          local path = vim.fn.expand '%'
+          cwd = path:gsub('oil://', '')
+        end
+        print('cwd', cwd)
+        require('telescope').extensions.live_grep_args.live_grep_args { cwd = cwd }
+      end, { desc = '[S]earch in [O]il dir' })
 
       vim.keymap.set('v', '<leader>gc', live_grep_args_shortcuts.grep_visual_selection)
 
@@ -1037,6 +1081,7 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      playground = { enable = true },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:

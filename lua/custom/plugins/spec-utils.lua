@@ -1,6 +1,5 @@
 return {
   'ally1002/spec-utils.nvim',
-  dir = '~/Desktop/aly/spec-utils.nvim',
   dependencies = {
     { 'nvim-lua/plenary.nvim', name = 'plenary' },
   },
@@ -16,6 +15,10 @@ return {
 
     vim.keymap.set('n', '<leader><C-y>', function()
       File.copy_test_file(vim.api.nvim_buf_get_name(0))
+    end)
+
+    vim.keymap.set('n', '<leader><C-p>', function()
+      File.copy_current_relative_path(vim.api.nvim_buf_get_name(0))
     end)
   end,
 }

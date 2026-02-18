@@ -7,6 +7,9 @@ return {
         clear_suggestion = '<C-]>',
         accept_word = '<C-n>',
       },
+      condition = function()
+        return vim.fn.expand '%:t' ~= 'claude-prompt'
+      end
     }
 
     local api = require 'supermaven-nvim.api'
@@ -15,3 +18,4 @@ return {
     vim.keymap.set('n', '<leader>smr', function() api.restart() end)
   end,
 }
+
