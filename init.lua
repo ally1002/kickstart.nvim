@@ -205,6 +205,9 @@ vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
 vim.keymap.set('v', '<Tab>', '>gv')
 vim.keymap.set('v', '<S-Tab>', '<gv')
 
+-- columnizer from tab separator
+vim.keymap.set('v', '<leader>t', ":'<,'>.! column -t -s$'\t'<CR>")
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -289,6 +292,22 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+
+vim.api.nvim_create_user_command('TteRandom', function()
+  local win = vim.api.nvim_get_current_win()
+  local first_line = vim.fn.line('w0', win)
+  local last_line = vim.fn.line('w$', win)
+  local lines = vim.api.nvim_buf_get_lines(0, first_line - 1, last_line, false)
+  if #lines == 0 then
+    lines = { 'Hello World' }
+  end
+  table.insert(lines, '')
+  local tmpfile = '/tmp/tte_input.txt'
+  vim.fn.writefile(lines, tmpfile)
+  vim.api.nvim_command('enew')
+  vim.bo.filetype = ''
+  vim.api.nvim_command('terminal bash -c "cat ' .. tmpfile .. ' | tte --random-effect"')
+end, {})
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -1066,11 +1085,12 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'master',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'ruby' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1100,7 +1120,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',

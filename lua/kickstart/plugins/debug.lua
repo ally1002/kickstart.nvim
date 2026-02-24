@@ -23,6 +23,13 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+
+    -- Neotest for running tests
+    'nvim-neotest/neotest',
+    'nvim-lua/plenary.nvim',
+    'antoinemadec/FixCursorHold.nvim',
+    'fredrikaverpil/neotest-golang',
+    'olimorris/neotest-rspec',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -75,6 +82,39 @@ return {
         require('dapui').toggle()
       end,
       desc = 'Debug: See last session result.',
+    },
+    -- Neotest keymaps
+    {
+      '<leader>tt',
+      function()
+        local file = vim.fn.expand '%'
+        local dir = vim.fn.fnamemodify(file, ':p:h')
+        vim.cmd.cd(dir)
+        require('neotest').run.run(file)
+      end,
+      desc = 'Run File Tests',
+    },
+    {
+      '<leader>tn',
+      function()
+        require('neotest').run.run()
+      end,
+      desc = 'Run Nearest Test',
+    },
+    {
+      '<leader>tl',
+      function()
+        require('neotest').run.run_last()
+      end,
+      desc = 'Run Last Test',
+    },
+    {
+      '<leader>ts',
+      function()
+        require('neotest').summary.toggle()
+        vim.cmd.wincmd 'l'
+      end,
+      desc = 'Toggle Test Summary',
     },
   },
   config = function()
@@ -138,10 +178,17 @@ return {
 
     -- Install golang specific config
     require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
+      detached = vim.fn.has 'win32' == 0,
+    }
+
+    -- Neotest setup
+    require('neotest').setup {
+      adapters = {
+        require 'neotest-golang' {
+          runner = 'go test',
+          go_test_args = { '-v', '-count=1' },
+        },
+        require 'neotest-rspec',
       },
     }
   end,
