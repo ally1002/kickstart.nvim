@@ -30,6 +30,7 @@ return {
     'antoinemadec/FixCursorHold.nvim',
     'fredrikaverpil/neotest-golang',
     'olimorris/neotest-rspec',
+    'nvim-neotest/neotest-jest',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -87,10 +88,7 @@ return {
     {
       '<leader>tt',
       function()
-        local file = vim.fn.expand '%'
-        local dir = vim.fn.fnamemodify(file, ':p:h')
-        vim.cmd.cd(dir)
-        require('neotest').run.run(file)
+        require('neotest').run.run(vim.fn.expand '%')
       end,
       desc = 'Run File Tests',
     },
@@ -115,6 +113,13 @@ return {
         vim.cmd.wincmd 'l'
       end,
       desc = 'Toggle Test Summary',
+    },
+    {
+      '<leader>to',
+      function()
+        require('neotest').output.open()
+      end,
+      desc = 'Show Test Output',
     },
   },
   config = function()
@@ -181,14 +186,24 @@ return {
       detached = vim.fn.has 'win32' == 0,
     }
 
+    -- Preload neotest to avoid freeze on first run
+    require('neotest')
+    require('neotest-golang')
+    require('neotest-rspec')
+    require('neotest-jest')
+
     -- Neotest setup
     require('neotest').setup {
+      discovery = {
+        enabled = false,
+      },
       adapters = {
         require 'neotest-golang' {
           runner = 'go test',
           go_test_args = { '-v', '-count=1' },
         },
         require 'neotest-rspec',
+        require 'neotest-jest',
       },
     }
   end,
