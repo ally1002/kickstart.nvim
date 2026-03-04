@@ -222,6 +222,8 @@ local function query_replace()
     return
   end
 
+  replace = replace:gsub('\\n', '\r'):gsub('\\t', '\t'):gsub('\\r', '\r'):gsub('\\\\', '\\')
+
   vim.fn.setreg('/', search)
   vim.fn.setreg('+', replace)
 
@@ -479,6 +481,14 @@ require('lazy').setup({
           local telescope = require 'telescope'
           local lga_actions = require 'telescope-live-grep-args.actions'
 
+          local function escape_prompt(bufnr)
+            local action_state = require 'telescope.actions.state'
+            local picker = action_state.get_current_picker(bufnr)
+            local prompt = picker:_get_prompt()
+            prompt = vim.fn.escape(prompt, '"[]{}()')
+            picker:set_prompt(prompt)
+          end
+
           telescope.setup {
             extensions = {
               live_grep_args = {
@@ -505,6 +515,8 @@ require('lazy').setup({
                     ['<C-i>'] = lga_actions.quote_prompt { postfix = ' --glob "!*spec*"' },
                     -- freeze the current list and start a fuzzy search in the frozen list
                     ['<C-space>'] = lga_actions.to_fuzzy_refine,
+                    -- escape brackets
+                    ['<C-e>'] = escape_prompt,
                   },
                 },
               },
