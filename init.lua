@@ -245,6 +245,42 @@ local function query_replace()
 end
 
 vim.api.nvim_create_user_command('QueryReplace', query_replace, { range = true })
+
+vim.api.nvim_create_user_command('CpAdd', function(args)
+  local start_line, end_line
+
+  if args.range > 0 then
+    start_line = args.line1
+    end_line = args.line2
+  else
+    return
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+  local qf_items = {}
+
+  for _, line in ipairs(lines) do
+    local trimmed = vim.fn.fnamemodify(vim.fn.trim(line), ':p')
+      if trimmed ~= '' then
+        local is_file = vim.fn.filereadable(trimmed) == 1
+        if is_file then
+        table.insert(qf_items, {
+          filename = trimmed,
+          lnum = 1,
+          valid = true,
+        })
+      end
+    end
+  end
+
+  if #qf_items > 0 then
+    vim.fn.setqflist({}, 'r', { items = qf_items, title = 'CpAdd' })
+    vim.cmd('copen')
+    print(string.format('Added %d file(s) to quickfix', #qf_items))
+  else
+    print('No valid files found')
+  end
+end, { range = true })
 -- LspRestart
 vim.keymap.set('n', '<leader>zig', '<cmd>LspRestart<cr>')
 
