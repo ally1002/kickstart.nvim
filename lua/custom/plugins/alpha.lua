@@ -166,7 +166,7 @@ return {
 
     local selected_ascii = ascii_contents[random_index]
     dashboard.section.header.val = selected_ascii.art
-    print(selected_ascii.name)
+    dashboard.section.footer.val = selected_ascii.name
 
     -- 2. Colorize it (Using a blue highlight group for Riolu)
     dashboard.section.header.opts.hl = 'Function'
