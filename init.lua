@@ -263,15 +263,30 @@ vim.api.nvim_create_user_command('CpAdd', function(args)
     local trimmed = vim.fn.fnamemodify(vim.fn.trim(line), ':p')
       if trimmed ~= '' then
         local is_file = vim.fn.filereadable(trimmed) == 1
+        local lnum = 1
         if is_file then
-        table.insert(qf_items, {
-          filename = trimmed,
-          lnum = 1,
-          valid = true,
-        })
+          table.insert(qf_items, {
+            filename = trimmed,
+            lnum = lnum,
+            valid = true,
+          })
+        else
+          local filepath, linenum = string.match(trimmed, '^(.+):(%d+)$')
+          if filepath then
+            filepath = vim.fn.fnamemodify(filepath, ':p')
+            is_file = vim.fn.filereadable(filepath) == 1
+            if is_file then
+              lnum = tonumber(linenum)
+              table.insert(qf_items, {
+                filename = filepath,
+                lnum = lnum,
+                valid = true,
+              })
+            end
+          end
+        end
       end
     end
-  end
 
   if #qf_items > 0 then
     vim.fn.setqflist({}, 'r', { items = qf_items, title = 'CpAdd' })
@@ -1149,6 +1164,7 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      incremental_selection = { enable = true },
       playground = { enable = true },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
